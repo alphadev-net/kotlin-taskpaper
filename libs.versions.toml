@@ -1,5 +1,3 @@
 [versions]
-kotlinx-io = "0.8.2"
 
 [libraries]
-kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
