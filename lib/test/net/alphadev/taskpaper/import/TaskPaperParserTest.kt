@@ -10,7 +10,7 @@ import kotlin.test.assertNull
 class TaskParserParserTest {
 
     @Test
-    fun `empty tag name throws exception`() {
+    fun emptyTagNameThrowsException() {
         val input = "- Task with empty tag @"
 
         val result = parseTaskPaperFromString(input)
@@ -18,7 +18,7 @@ class TaskParserParserTest {
     }
 
     @Test
-    fun `unclosed parenthesis throws exception`() {
+    fun unclosedParenthesisThrowsException() {
         val input = "- Task @due(2024-01-30"
 
         val result = parseTaskPaperFromString(input)
@@ -26,7 +26,7 @@ class TaskParserParserTest {
     }
 
     @Test
-    fun `duplicate tags throw exception`() {
+    fun duplicateTagsThrowException() {
         val input = "- Task @priority(high) @priority(low)"
 
         val result = parseTaskPaperFromString(input)
@@ -34,7 +34,7 @@ class TaskParserParserTest {
     }
 
     @Test
-    fun `correct line number on multiline input`() {
+    fun correctLineNumberOnMultilineInput() {
         val input = """
             Project:
             - Valid task
@@ -47,7 +47,7 @@ class TaskParserParserTest {
     }
 
     @Test
-    fun `nested parentheses are handled correctly`() {
+    fun nestedParenthesesAreHandledCorrectly() {
         val input = "- Task @note(value with (nested) parens)"
 
         val taskPaper = parseTaskPaperFromString(input)
