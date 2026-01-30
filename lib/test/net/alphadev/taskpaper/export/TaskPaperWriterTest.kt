@@ -41,7 +41,7 @@ class TaskPaperWriterTest {
     @Test
     fun serializeIemWithTagWithoutValue() {
         val taskPaper = TaskPaper(listOf(
-            Task("Important task", 0, mapOf("urgent" to null))
+            Task("Important task", 0, mapOf("urgent" to emptyList()))
         ))
 
         assertEquals("- Important task @urgent", taskPaper.toTaskPaperString())
@@ -50,7 +50,7 @@ class TaskPaperWriterTest {
     @Test
     fun serializeIemWithTagWithValue() {
         val taskPaper = TaskPaper(listOf(
-            Task("Schedule meeting", 0, mapOf("due" to "2024-06-20"))
+            Task("Schedule meeting", 0, mapOf("due" to listOf("2024-06-20")))
         ))
 
         assertEquals("- Schedule meeting @due(2024-06-20)", taskPaper.toTaskPaperString())
@@ -60,9 +60,9 @@ class TaskPaperWriterTest {
     fun serializeIemWithMultipleTags() {
         val taskPaper = TaskPaper(listOf(
             Task("Review code", 0, mapOf(
-                "priority" to "high",
-                "context" to "work",
-                "done" to null
+                "priority" to listOf("high"),
+                "context" to listOf("work"),
+                "done" to emptyList()
             ))
         ))
 
@@ -95,13 +95,13 @@ class TaskPaperWriterTest {
     @Test
     fun serializeComplexDocument() {
         val taskPaper = TaskPaper(listOf(
-            Project("Work", 0, mapOf("context" to "office")),
-            Task("Meeting prep", 1, mapOf("due" to "2024-06-20")),
+            Project("Work", 0, mapOf("context" to listOf("office"))),
+            Task("Meeting prep", 1, mapOf("due" to listOf("2024-06-20"))),
             Note("Bring laptop", 2),
-            Task("Code review", 1, mapOf("priority" to "high", "done" to null)),
+            Task("Code review", 1, mapOf("priority" to listOf("high"), "done" to emptyList())),
             Project("Personal", 0),
             Task("Groceries", 1),
-            Task("Gym", 1, mapOf("time" to "6pm"))
+            Task("Gym", 1, mapOf("time" to listOf("6pm")))
         ))
 
         val expected = """
@@ -142,7 +142,7 @@ class TaskPaperWriterTest {
     @Test
     fun serializeTagWithParenthesesInValue() {
         val taskPaper = TaskPaper(listOf(
-            Task("Task", 0, mapOf("note" to "value (with parens)"))
+            Task("Task", 0, mapOf("note" to listOf("value (with parens)")))
         ))
 
         assertEquals("- Task @note(value (with parens))", taskPaper.toTaskPaperString())

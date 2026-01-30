@@ -3,5 +3,5 @@ package net.alphadev.taskpaper.format
 sealed class Item {
     abstract val text: String
     abstract val indentLevel: Int
-    abstract val tags: Map<String, String?>
+    abstract val tags: Tags
 }

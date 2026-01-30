@@ -56,6 +56,17 @@ class TaskParserParserTest {
         val task = taskPaper.items[0]
         assertIs<Task>(task)
 
-        assertEquals("value with (nested) parens", task.tags["note"])
+        assertEquals("value with (nested) parens", task.tags["note"]?.first())
+    }
+
+    @Test
+    fun parseTagWithMultipleValues() {
+        val input = "- Task @people(Alice, Bob, Charlie)"
+
+        val taskPaper = parseTaskPaperFromString(input)
+        assertIs<TaskPaper>(taskPaper)
+
+        val task = taskPaper.items[0] as Task
+        assertEquals(listOf("Alice", "Bob", "Charlie"), task.tags["people"])
     }
 }

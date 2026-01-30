@@ -25,7 +25,9 @@ fun Project.toTaskPaperLine() = "$text:"
 
 fun Task.toTaskPaperLine() = "- $text"
 
-fun Map.Entry<String, String?>.toTaskPaperLine() = buildString {
+fun Map.Entry<String, List<String>>.toTaskPaperLine() = buildString {
     append(" @$key")
-    value?.let { append("($value)") }
+    if (value.isNotEmpty()) {
+        append("(${value.joinToString(", ")})")
+    }
 }

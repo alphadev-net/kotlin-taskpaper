@@ -5,6 +5,7 @@ import net.alphadev.taskpaper.format.Task
 import net.alphadev.taskpaper.format.Item
 import net.alphadev.taskpaper.format.Project
 import net.alphadev.taskpaper.format.Note
+import net.alphadev.taskpaper.format.Tags
 
 fun parseTaskPaperFromString(input: String): TaskPaper? = try {
     TaskPaper(
@@ -31,7 +32,7 @@ private fun parseLine(line: String, lineNum: Int): Item {
     }
 }
 
-private fun extractTags(content: String, lineNum: Int): Pair<String, Map<String, String?>> {
+private fun extractTags(content: String, lineNum: Int): Pair<String, Tags> {
     var text = content
 
     val tags = buildMap {
@@ -51,7 +52,7 @@ private fun extractTags(content: String, lineNum: Int): Pair<String, Map<String,
                 }
 
                 val tagName = text.substring(nameStart, i)
-                var tagValue: String? = null
+                val tagValues = mutableListOf<String>()
 
                 if (i < text.length && text[i] == '(') {
                     val valueStart = i + 1
@@ -70,14 +71,18 @@ private fun extractTags(content: String, lineNum: Int): Pair<String, Map<String,
                         throw TaskPaperParseException(lineNum, content, "Unclosed parenthesis in tag value")
                     }
 
-                    tagValue = text.substring(valueStart, i - 1)
+                    val valueContent = text.substring(valueStart, i - 1)
+                    if (valueContent.isNotEmpty()) {
+                        // Split by comma, handling nested parentheses
+                        tagValues.addAll(splitTagValues(valueContent))
+                    }
                 }
 
                 if (containsKey(tagName)) {
                     throw TaskPaperParseException(lineNum, content, "Duplicate tag '@$tagName'")
                 }
 
-                put(tagName, tagValue)
+                put(tagName, tagValues)
                 text = text.substring(0, tagStart) + text.substring(i)
                 i = tagStart
             } else {
@@ -87,4 +92,34 @@ private fun extractTags(content: String, lineNum: Int): Pair<String, Map<String,
     }
 
     return text.trim() to tags
+}
+
+private fun splitTagValues(content: String): List<String> {
+    val values = mutableListOf<String>()
+    var current = StringBuilder()
+    var depth = 0
+
+    for (char in content) {
+        when {
+            char == '(' -> {
+                depth++
+                current.append(char)
+            }
+            char == ')' -> {
+                depth--
+                current.append(char)
+            }
+            char == ',' && depth == 0 -> {
+                values.add(current.toString().trim())
+                current = StringBuilder()
+            }
+            else -> current.append(char)
+        }
+    }
+
+    if (current.isNotEmpty()) {
+        values.add(current.toString().trim())
+    }
+
+    return values
 }
