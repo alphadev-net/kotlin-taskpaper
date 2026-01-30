@@ -7,7 +7,7 @@ import net.alphadev.taskpaper.format.Project
 import net.alphadev.taskpaper.format.Note
 import net.alphadev.taskpaper.format.Tags
 
-fun parseTaskPaperFromString(input: String): TaskPaper? = try {
+fun parseTaskPaperFromString(input: String, failOnError: Boolean = false): TaskPaper? = try {
     TaskPaper(
         input.lines()
             .mapIndexed { index, line -> index + 1 to line }
@@ -15,7 +15,8 @@ fun parseTaskPaperFromString(input: String): TaskPaper? = try {
             .map { (lineNum, line) -> parseLine(line, lineNum) }
     )
 } catch (ex: TaskPaperParseException) {
-    null
+    if (failOnError) throw ex
+    else null
 }
 
 private fun parseLine(line: String, lineNum: Int): Item {
@@ -73,7 +74,6 @@ private fun extractTags(content: String, lineNum: Int): Pair<String, Tags> {
 
                     val valueContent = text.substring(valueStart, i - 1)
                     if (valueContent.isNotEmpty()) {
-                        // Split by comma, handling nested parentheses
                         tagValues.addAll(splitTagValues(valueContent))
                     }
                 }

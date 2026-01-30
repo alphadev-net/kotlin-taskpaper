@@ -2,10 +2,7 @@ package net.alphadev.taskpaper.import
 
 import net.alphadev.taskpaper.format.Task
 import net.alphadev.taskpaper.format.TaskPaper
-import kotlin.test.assertEquals
-import kotlin.test.Test
-import kotlin.test.assertIs
-import kotlin.test.assertNull
+import kotlin.test.*
 
 class TaskParserParserTest {
 
@@ -13,24 +10,30 @@ class TaskParserParserTest {
     fun emptyTagNameThrowsException() {
         val input = "- Task with empty tag @"
 
-        val result = parseTaskPaperFromString(input)
-        assertNull(result)
+        val exception = assertFails { parseTaskPaperFromString(input, failOnError = true) }
+        assertIs<TaskPaperParseException>(exception)
+
+        assertContains(exception.message!!, "Empty tag name after '@'")
     }
 
     @Test
     fun unclosedParenthesisThrowsException() {
         val input = "- Task @due(2024-01-30"
 
-        val result = parseTaskPaperFromString(input)
-        assertNull(result)
+        val exception = assertFails { parseTaskPaperFromString(input, failOnError = true) }
+        assertIs<TaskPaperParseException>(exception)
+
+        assertContains(exception.message!!, "Unclosed parenthesis in tag value")
     }
 
     @Test
     fun duplicateTagsThrowException() {
         val input = "- Task @priority(high) @priority(low)"
 
-        val result = parseTaskPaperFromString(input)
-        assertNull(result)
+        val exception = assertFails { parseTaskPaperFromString(input, failOnError = true) }
+        assertIs<TaskPaperParseException>(exception)
+
+        assertContains(exception.message!!, "Duplicate tag")
     }
 
     @Test
