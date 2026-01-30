@@ -10,58 +10,64 @@ class TaskPaperWriterTest {
 
     @Test
     fun serializeSimpleProject() {
-        val taskPaper = TaskPaper(listOf(
-            Project("My Project", 0)
-        ))
+        val taskPaper = TaskPaper {
+            project("My Project")
+        }
 
         assertEquals("My Project:", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeSimpleTsk() {
-        val taskPaper = TaskPaper(listOf(
-            Task("Do something", 0)
-        ))
+        val taskPaper = TaskPaper {
+            task("Do something")
+        }
 
         assertEquals("- Do something", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeSimpleNote() {
-        val taskPaper = TaskPaper(listOf(
-            Note("Just a note", 0)
-        ))
+        val taskPaper = TaskPaper {
+            note("Just a note")
+        }
 
         assertEquals("Just a note", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeIemWithTagWithoutValue() {
-        val taskPaper = TaskPaper(listOf(
-            Task("Important task", 0, tag("urgent"))
-        ))
+        val taskPaper = TaskPaper {
+            task("Important task") {
+                tag("urgent")
+            }
+        }
 
         assertEquals("- Important task @urgent", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeIemWithTagWithValue() {
-        val taskPaper = TaskPaper(listOf(
-            Task("Schedule meeting", 0, tag("due", "2024-06-20"))
-        ))
+        val taskPaper = TaskPaper {
+            task("Schedule meeting") {
+                tag("due") {
+                    value("2024-06-20")
+                }
+            }
+        }
 
         assertEquals("- Schedule meeting @due(2024-06-20)", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeIemWithMultipleTags() {
-        val taskPaper = TaskPaper(listOf(
-            Task("Review code", 0,
-                 tag("priority", "high"),
-                 tag("context", "work"),
-                 tag("done")
-            ))
-        )
+        val taskPaper = TaskPaper {
+            task("Review code") {
+                tag("priority") { value( "high") }
+                tag("context") { value("work") }
+                tag("done")
+            }
+        }
 
         val result = taskPaper.toTaskPaperString()
         assertTrue(result.startsWith("- Review code"))
@@ -72,12 +78,14 @@ class TaskPaperWriterTest {
 
     @Test
     fun serializeIndentedItems() {
-        val taskPaper = TaskPaper(listOf(
-            Project("Project", 0),
-            Task("Task 1", 1),
-            Task("Task 2", 1),
-            Note("Note under task 2", 2)
-        ))
+        val taskPaper = TaskPaper {
+            project("Project") {
+                task("Task 1")
+                task("Task 2") {
+                    note("Note under task 2")
+                }
+            }
+        }
 
         val expected = """
             Project:
@@ -91,15 +99,31 @@ class TaskPaperWriterTest {
 
     @Test
     fun serializeComplexDocument() {
-        val taskPaper = TaskPaper(listOf(
-            Project("Work", 0, tag("context", "office")),
-            Task("Meeting prep", 1, tag("due", "2024-06-20")),
-            Note("Bring laptop", 2),
-            Task("Code review", 1, tag("priority", "high"), tag("done")),
-            Project("Personal", 0),
-            Task("Groceries", 1),
-            Task("Gym", 1, tag("time", "6pm"))
-        ))
+        val taskPaper = TaskPaper {
+            project("Work") {
+                tag("context") {
+                    value("office")
+                }
+                task("Meeting prep") {
+                    tag("due") {
+                        value("2024-06-20")
+                    }
+                    note("Bring laptop")
+                }
+                task("Code review") {
+                    tag("priority") { value("high") }
+                    tag("done")
+                }
+            }
+            project("Personal") {
+                task("Groceries")
+                task("Gym") {
+                    tag("time") {
+                        value("6pm")
+                    }
+                }
+            }
+        }
 
         val expected = """
             Work: @context(office)
@@ -131,16 +155,20 @@ class TaskPaperWriterTest {
 
     @Test
     fun serializeEmptyTaskpaper() {
-        val taskPaper = TaskPaper(emptyList())
+        val taskPaper = TaskPaper {}
 
         assertEquals("", taskPaper.toTaskPaperString())
     }
 
     @Test
     fun serializeTagWithParenthesesInValue() {
-        val taskPaper = TaskPaper(listOf(
-            Task("Task", 0, tag("note", "value (with parens)"))
-        ))
+        val taskPaper = TaskPaper {
+            task("Task") {
+                tag("note") {
+                    value("value (with parens)")
+                }
+            }
+        }
 
         assertEquals("- Task @note(value (with parens))", taskPaper.toTaskPaperString())
     }
