@@ -2,7 +2,7 @@ package net.alphadev.taskpaper.export
 
 import net.alphadev.taskpaper.format.*
 
-fun TaskPaper.toTaskPaperString(): String = buildString {
+public fun TaskPaper.toTaskPaperString(): String = buildString {
     items.forEach { item ->
         append(item.toTaskPaperLine())
     }
@@ -21,11 +21,11 @@ private fun Item.toTaskPaperLine(): String = buildString {
     appendLine()
 }
 
-fun Project.toTaskPaperLine() = "$text:"
+private fun Project.toTaskPaperLine() = "$text:"
 
-fun Task.toTaskPaperLine() = "- $text"
+private fun Task.toTaskPaperLine() = "- $text"
 
-fun Map.Entry<String, List<String>>.toTaskPaperLine() = buildString {
+private fun Map.Entry<String, List<String>>.toTaskPaperLine() = buildString {
     append(" @$key")
     if (value.isNotEmpty()) {
         append("(${value.joinToString(", ")})")

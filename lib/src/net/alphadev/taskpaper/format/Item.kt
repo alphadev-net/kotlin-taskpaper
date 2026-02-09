@@ -1,7 +1,7 @@
 package net.alphadev.taskpaper.format
 
-sealed class Item {
-    abstract val text: String
-    abstract val indentLevel: Int
-    abstract val tags: Tags
+public sealed class Item {
+    public abstract val text: String
+    internal abstract val indentLevel: Int
+    public abstract val tags: Tags
 }

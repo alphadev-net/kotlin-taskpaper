@@ -7,7 +7,7 @@ import net.alphadev.taskpaper.format.Project
 import net.alphadev.taskpaper.format.Note
 import net.alphadev.taskpaper.format.Tags
 
-fun parseTaskPaperFromString(input: String, failOnError: Boolean = false): TaskPaper? = try {
+public fun parseTaskPaperFromString(input: String, failOnError: Boolean = false): TaskPaper? = try {
     TaskPaper(
         input.lines()
             .mapIndexed { index, line -> index + 1 to line }

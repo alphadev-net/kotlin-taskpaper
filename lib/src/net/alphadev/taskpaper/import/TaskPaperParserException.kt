@@ -1,7 +1,7 @@
 package net.alphadev.taskpaper.import
 
-class TaskPaperParseException(
-    val line: Int,
-    val content: String,
+public class TaskPaperParseException internal constructor(
+    line: Int,
+    content: String,
     message: String
 ) : Exception("Line $line: $message - '$content'")

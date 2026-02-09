@@ -1,3 +1,3 @@
 package net.alphadev.taskpaper.format
 
-typealias Tags = Map<String, List<String>>
+public typealias Tags = Map<String, List<String>>

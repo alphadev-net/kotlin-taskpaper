@@ -3,6 +3,9 @@ product:
   platforms: [jvm, android, iosArm64, iosSimulatorArm64, iosX64]
 
 settings:
+  kotlin:
+    freeCompilerArgs:
+      - -Xexplicit-api=warning
   publishing:
     name: kotlin-taskpaper
 

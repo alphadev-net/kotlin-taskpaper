@@ -1,11 +1,12 @@
 package net.alphadev.taskpaper.format
 
-data class Note(
+@ConsistentCopyVisibility
+public data class Note internal constructor(
     override val text: String,
     override val indentLevel: Int,
     override val tags: Tags = emptyMap()
 ) : Item() {
-    constructor(
+    internal constructor(
         text: String,
         indentLevel: Int,
         vararg tags: Pair<String, List<String>>
