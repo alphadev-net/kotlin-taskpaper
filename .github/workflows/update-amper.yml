@@ -2,74 +2,19 @@ name: Amper Auto-Update
 
 on:
   schedule:
-    # Runs daily at 08:00 UTC — adjust to your preference
     - cron: '0 8 * * *'
   workflow_dispatch:
     inputs:
       force_update:
         description: 'Force update even if version is unchanged'
         required: false
-        default: 'false'
+        default: false
         type: boolean
-
-permissions:
-  contents: write
 
 jobs:
   update-amper:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Get current Amper version
-        id: current_version
-        run: |
-          VERSION=$(./amper --version 2>/dev/null | grep -oP '\d+\.\d+[\.\d]*' | head -1 || echo "unknown")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Current Amper version: $VERSION"
-
-      - name: Run amper update
-        id: amper_update
-        run: |
-          OUTPUT=$(./amper update)
-          echo "$OUTPUT"
-          VERSION=$(echo "$OUTPUT" | grep -oP 'JetBrains Amper version \K[\d.]+')
-          echo "new_version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Check for changes
-        id: changes
-        run: |
-          if git diff --quiet && [ "${{ inputs.force_update }}" != "true" ]; then
-            echo "No changes detected after update"
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "Changes detected"
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Run amper test
-        if: steps.changes.outputs.has_changes == 'true'
-        run: ./amper test
-
-      - name: Commit and push changes
-        if: steps.changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add -A
-          git commit -m "chore: update Amper ${{ steps.current_version.outputs.version }} → ${{ steps.amper_update.outputs.new_version }}"
-          git push
-
-      - name: Summary
-        run: |
-          if [ "${{ steps.changes.outputs.has_changes }}" == "true" ]; then
-            echo "### ✅ Amper updated and tests passed" >> $GITHUB_STEP_SUMMARY
-            echo "**${{ steps.current_version.outputs.version }}** → **${{ steps.amper_update.outputs.new_version }}**" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### ℹ️ Already on latest Amper version (${{ steps.current_version.outputs.version }})" >> $GITHUB_STEP_SUMMARY
-          fi
+    uses: alphadev-net/action-workflows/.github/workflows/update-amper.yml@main
+    with:
+      force_update: ${{ inputs.force_update || false }}
+    permissions:
+      contents: write
